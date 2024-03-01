@@ -1,0 +1,341 @@
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[13].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[13].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[5].oneOf[13].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[5].oneOf[13].use[5]!./src/screens/home/_home.scss ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.home {
+  height: 100%;
+  min-height: -webkit-fill-available;
+  width: 100vw;
+  background-color: white;
+  display: flex;
+  overflow: hidden;
+}
+.home_content {
+  width: 100%;
+  height: 100%;
+  max-width: 133.6rem;
+  margin: auto;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  overflow: hidden;
+}
+.home_content_header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4.8rem;
+  width: 100%;
+  padding: 0 5%;
+  background-color: white;
+  color: black;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-column-gap: 2.4rem;
+  column-gap: 2.4rem;
+  align-items: center;
+}
+.home_content_header--leading {
+  width: 4rem;
+  font-size: 2.4rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.home_content_header--title {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+.home_content_header--actions {
+  width: 4rem;
+}
+.home_content_body {
+  padding-top: 4.8rem;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+.home_content_body > .column {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+}
+.home_content_body > .column > .expanded {
+  flex: 1 1;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+.home_content_body > .column > .expanded > .column {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  overflow: scroll;
+}
+.home_content_body > .column > .expanded > .column .expanded {
+  height: 100%;
+  width: 100%;
+  margin-top: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: grid;
+  grid-auto-flow: row;
+  align-items: center;
+  align-content: center;
+  grid-row-gap: 2.4rem;
+  row-gap: 2.4rem;
+  justify-content: center;
+  justify-items: center;
+  padding: 0 10%;
+  font-size: 1.4rem;
+  color: #777;
+  text-align: center;
+}
+.home_content_body > .column > .expanded > .column .form {
+  padding: 2.4rem 5%;
+  height: -moz-fit-content;
+  height: fit-content;
+  width: 100%;
+  display: grid;
+  grid-auto-flow: row;
+  grid-row-gap: 1.6rem;
+  row-gap: 1.6rem;
+}
+.home_content_body > .column > .expanded > .column .form .section {
+  margin-top: 2.4rem;
+  border: 1px solid #eee;
+  padding: 2.4rem;
+  border-radius: 1.6rem;
+  position: relative;
+  display: grid;
+  grid-auto-flow: row;
+  grid-row-gap: 1.6rem;
+  row-gap: 1.6rem;
+}
+.home_content_body > .column > .expanded > .column .form .section_title {
+  position: absolute;
+  top: -0.6rem;
+  left: 1.2rem;
+  color: black;
+  padding: 0rem 1.2rem;
+  background-color: white;
+}
+.home_content_body > .column > .expanded > .column .form .section > .input_field {
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  position: relative;
+}
+.home_content_body > .column > .expanded > .column .form .section > .input_field .input_field_label {
+  font-size: 1.4rem;
+  height: 2.4rem;
+  font-weight: 600;
+}
+.home_content_body > .column > .expanded > .column .form .section > .input_field .input_field_wrapper {
+  height: 100%;
+  width: 100%;
+  border: 1px solid #eee;
+  border-radius: 0.8rem;
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+}
+.home_content_body > .column > .expanded > .column .form .section > .input_field .input_field_wrapper.error {
+  border-color: red;
+}
+.home_content_body > .column > .expanded > .column .form .section > .input_field .input_field_input {
+  width: 100% !important;
+  outline: none;
+  background-color: transparent;
+  height: 4.8rem;
+  border: none;
+  -moz-appearance: none;
+       appearance: none;
+  -webkit-appearance: none;
+  padding: 0rem 1.6rem;
+  font-size: 1.6rem;
+  color: black;
+}
+.home_content_body > .column > .expanded > .column .form .section > .input_field .input_field_suffix {
+  width: 4rem;
+  color: red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home_content_body > .column > .expanded > .column .form .section > .input_field .input_field_error {
+  margin-top: 0.4rem;
+  margin-left: 0.4rem;
+  color: red;
+}
+.home_content_body > .column > .expanded > .column .form .dropdown {
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.home_content_body > .column > .expanded > .column .form .dropdown .dropdown_label {
+  font-size: 1.4rem;
+  height: 2.4rem;
+  font-weight: 600;
+}
+.home_content_body > .column > .expanded > .column .form .dropdown select:required:invalid {
+  color: gray;
+}
+.home_content_body > .column > .expanded > .column .form .dropdown .dropdown_input {
+  outline: none;
+  background-color: white;
+  height: 4.8rem;
+  border: 1px solid #eee;
+  border-radius: 0.8rem;
+  -moz-appearance: none;
+       appearance: none;
+  -webkit-appearance: none;
+  padding: 0rem 1.6rem;
+  font-size: 1.6rem;
+  color: black;
+}
+.home_content_body > .column > .expanded > .column .form .dropdown .dropdown_input.error {
+  border-color: red;
+}
+.home_content_body > .column > .expanded > .column .form .dropdown .dropdown_error {
+  margin-top: 0.4rem;
+  margin-left: 0.4rem;
+  color: red;
+}
+.home_content_body > .column > .nav {
+  height: 7.2rem;
+  width: 100%;
+  padding: 0 2.5%;
+  overflow: hidden;
+  border-bottom: 1px solid #eee;
+}
+.home_content_body > .column .row {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 0 5%;
+  transition: all 1s ease;
+}
+.home_content_body > .column .row > .btn {
+  margin: 2.4rem 0rem;
+  height: 4.8rem;
+  width: 100%;
+  padding: 0rem 2.4rem;
+  justify-self: center;
+  border-radius: 0.8rem;
+  background-color: black;
+  color: white;
+  font-size: 1.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: bottom;
+}
+.home_content_body > .column .row > .btn.outline {
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+}
+.home_content_footer {
+  height: 2.4rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: grey;
+}
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[13].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[13].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[5].oneOf[13].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[5].oneOf[13].use[5]!./src/screens/home/widgets/stepper/_stepper.scss ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.stepper {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-column-gap: 0.8rem;
+  column-gap: 0.8rem;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.stepper > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stepper_divider {
+  margin-left: 0.4rem;
+  height: 0.1rem;
+  width: 1.2rem;
+  background-color: #eee;
+}
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[13].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[13].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[5].oneOf[13].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[5].oneOf[13].use[5]!./src/screens/home/widgets/step/_step.scss ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.step {
+  overflow: hidden;
+  height: 4.8rem;
+  width: 100%;
+  max-width: 16rem;
+  display: grid;
+  grid-template-areas: "leading";
+  grid-column-gap: 1.2rem;
+  column-gap: 1.2rem;
+  align-items: center;
+}
+.step.active {
+  flex: 1 1;
+  grid-template-areas: "leading title" "leading subtitle";
+}
+.step.active .step_title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  grid-area: title;
+  font-size: 1.4rem;
+}
+.step.active .step_subtitle {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  grid-area: subtitle;
+  font-size: 1rem;
+  max-lines: 2;
+  color: grey;
+}
+.step.active .step_leading {
+  background-color: #0ab80a;
+}
+.step_leading {
+  grid-area: leading;
+  height: 2.4rem;
+  width: 2.4rem;
+  border-radius: 100%;
+  background-color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+.step_title {
+  display: none;
+}
+.step_subtitle {
+  display: none;
+}

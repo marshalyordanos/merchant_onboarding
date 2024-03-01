@@ -1,0 +1,26 @@
+{
+  "name": "merchant_onboard",
+  "version": "1.0.0",
+  "description": "A merchant onboarding form page",
+  "main": "index.js",
+  "author": "Dawit Aschalew",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next",
+    "build": "next build && next export",
+    "start": "next start"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "next": "^13.4.16",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.45.4"
+  },
+  "devDependencies": {
+    "@types/node": "20.5.0",
+    "@types/react": "18.2.20",
+    "sass": "^1.65.1",
+    "typescript": "5.1.6"
+  }
+}
