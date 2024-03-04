@@ -21,7 +21,7 @@ axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
 axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
 
 export const Home = () => {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(2);
   const router = useRouter();
 
   const {
@@ -34,14 +34,14 @@ export const Home = () => {
   const [selectedOrgType, setSelectedOrgType] = useState<Category | null>();
   const [countries, setCountries] = useState<Country[] | null>();
   const [selectedCountry, setSelectedCountry] = useState<Country | null>();
-
+  const [agreement, setAgreement] = useState<boolean>(false);
   const fetchCategories = async () => {
     try {
       const res = await axios.get("/orgs/categories");
       var orgTypes: Category[] = (res.data["data"] as Map<string, any>[]).map(
         (e) => Category.fromJSON(e)
       );
-      console.log("orgTypes",orgTypes);
+      console.log("orgTypes", orgTypes);
       setOrgTypes(orgTypes.filter((e) => e.Parents.length == 0));
     } catch (error) {}
   };
@@ -95,8 +95,7 @@ export const Home = () => {
             required
             className={`dropdown_input ${
               typeErrors["orgType"] != undefined ? " error" : ""
-            }`}
-          >
+            }`}>
             <option value="" disabled>
               Select organization type
             </option>
@@ -139,8 +138,7 @@ export const Home = () => {
                 required
                 className={`dropdown_input ${
                   typeErrors["country"] != undefined ? " error" : ""
-                }`}
-              >
+                }`}>
                 <option value="" disabled>
                   Select country
                 </option>
@@ -178,15 +176,14 @@ export const Home = () => {
             onClick={() => {
               router.replace("/cancel");
             }}
-            className="home_content_header--leading"
-          >
+            className="home_content_header--leading">
             ⤬
           </div>
           <div className="home_content_header--title">Merchant Onboarding</div>
           <div className="home_content_header--actions"></div>
         </div>
         <div className="home_content_body">
-          {orgTypes == null || countries == null ? (
+          {orgTypes != null || countries != null ? (
             <div className="column"> Loading </div>
           ) : (
             <div className="column">
@@ -211,7 +208,7 @@ export const Home = () => {
                     // <Step title={"Business Registration"} subtitle={"Select the organization's origin and type"} key={2} index={3} isActive={index == 2} />,
                     <Step
                       title={"Terms & Conditions"}
-                      subtitle={"Select the organization's origin and type"}
+                      subtitle={"Aggree to the terms and conditions"}
                       key={2}
                       index={3}
                       isActive={index == 2}
@@ -236,7 +233,7 @@ export const Home = () => {
                             onSubmit={(v) => {
                               console.log("step23");
 
-                              console.log("step23",v);
+                              console.log("step23", v);
                             }}
                             ref={_step2Ref}
                           />
@@ -245,13 +242,19 @@ export const Home = () => {
                       return _step2;
                     }
                     case 2: {
-                      var _termsForm = <TermsForm />;
+                      var _termsForm = (
+                        <TermsForm
+                          agreement={agreement}
+                          setAggrement={setAgreement}
+                        />
+                      );
                       return _termsForm;
                     }
-                    // case 3:
-                    //   {
-                    //     return _primForm;
-                    //   }
+                    case 3: {
+                      {
+                        agreement && "_primForm go to the success page";
+                      }
+                    }
 
                     default:
                       break;
@@ -264,18 +267,21 @@ export const Home = () => {
                     switch (index) {
                       case 0: {
                         typeHandleSubmit((v) => {
-                          console.log("value---- ",v);
+                          console.log("value---- ", v);
                           setIndex(index + 1);
                         })();
                       }
                       case 1:
                         {
                           if (_step2Ref.current != undefined) {
-                            console.log("11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=")
-                            _step2Ref.current.validate();
-                            console.log("11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=***************")
+                            console.log(
+                              "11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-="
+                            );
+                            _step2Ref.current;
+                            console.log(
+                              "11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=***************"
+                            );
                             //  setIndex(index + 1);
-
                           }
                         }
                         break;
@@ -284,8 +290,7 @@ export const Home = () => {
                         break;
                     }
                   }}
-                  className="btn"
-                >
+                  className="btn">
                   Continue &nbsp; &rarr;{" "}
                 </div>
                 {index > 0 && (
@@ -294,8 +299,7 @@ export const Home = () => {
                       setIndex(index - 1);
                     }}
                     style={{ marginLeft: "1.6rem" }}
-                    className="btn outline"
-                  >
+                    className="btn outline">
                     Back
                   </div>
                 )}
