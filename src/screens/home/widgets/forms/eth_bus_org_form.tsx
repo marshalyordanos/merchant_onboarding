@@ -7,7 +7,7 @@ import { IosSpinner } from '../../../../widgets/loading/loading';
 import { Organization } from '../../../../models/organization/organization';
 import { Tax } from '../../../../models/tax/tax';
 
-export const EthBusOrgForm = forwardRef((props:{onSubmit:SubmitHandler<any>}, ref: React.ForwardedRef<any>) => {
+export const EthBusOrgForm = forwardRef((props:{onSubmit:SubmitHandler<any>,setDepartment:any}, ref: React.ForwardedRef<any>) => {
 
     const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm();
 
@@ -75,6 +75,7 @@ export const EthBusOrgForm = forwardRef((props:{onSubmit:SubmitHandler<any>}, re
 
                 return org;
             });
+            props.setDepartment(res.data["data"]['departments'])
             setLoading(false);
         } catch (error) {
             console.log("Error :"  + error);

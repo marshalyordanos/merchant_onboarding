@@ -15,6 +15,8 @@ import { Category } from "../../models/category/category";
 import { Country, CountryFlags } from "../../models/country/country";
 import { EthBusOrgForm } from "./widgets/forms/eth_bus_org_form";
 import { TermsForm } from "./widgets/forms/terms_form";
+import { Department } from "../../models/department/department";
+import Department_service from "./widgets/forms/Department_service";
 
 axios.defaults.baseURL = "http://localhost:5005";
 axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
@@ -34,6 +36,8 @@ export const Home = () => {
   const [selectedOrgType, setSelectedOrgType] = useState<Category | null>();
   const [countries, setCountries] = useState<Country[] | null>();
   const [selectedCountry, setSelectedCountry] = useState<Country | null>();
+  const [department,setDepartment] = useState<Department[] | null>([]);
+
 
   const fetchCategories = async () => {
     try {
@@ -208,14 +212,22 @@ export const Home = () => {
                       index={2}
                       isActive={index == 1}
                     />,
+                    
                     // <Step title={"Business Registration"} subtitle={"Select the organization's origin and type"} key={2} index={3} isActive={index == 2} />,
                     <Step
-                      title={"Terms & Conditions"}
-                      subtitle={"Select the organization's origin and type"}
+                      title={"Department & Service"}
+                      subtitle={"Select the organization's department and service"}
                       key={2}
                       index={3}
                       isActive={index == 2}
                     />,
+                    <Step
+                    title={"Terms & Conditions"}
+                    subtitle={"Select the organization's origin and type"}
+                    key={3}
+                    index={4}
+                    isActive={index == 3}
+                  />,
                     // <Step title={"Terms & Conditions"} subtitle={"Select the organization's origin and type"} key={3} index={4} isActive={index == 3} />,
                   ]}
                 />
@@ -233,10 +245,11 @@ export const Home = () => {
                       ) {
                         _step2 = (
                           <EthBusOrgForm
+                            setDepartment={setDepartment}
                             onSubmit={(v) => {
                               console.log("step23");
 
-                              console.log("step23",v);
+                              console.log("step23 ---000",v);
                             }}
                             ref={_step2Ref}
                           />
@@ -244,14 +257,21 @@ export const Home = () => {
                       }
                       return _step2;
                     }
-                    case 2: {
-                      var _termsForm = <TermsForm />;
-                      return _termsForm;
-                    }
-                    // case 3:
-                    //   {
-                    //     return _primForm;
-                    //   }
+                   
+                    case 2:
+                      {
+                        return <Department_service departments={department}  onSubmit={(v) => {
+                          console.log("step23");
+
+                          console.log("step23",v);
+                        }}
+                        ref={_step2Ref}  />;
+                      }
+                    
+                      case 3: {
+                        var _termsForm = <TermsForm />;
+                        return _termsForm;
+                      }
 
                     default:
                       break;
@@ -274,11 +294,23 @@ export const Home = () => {
                             console.log("11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=")
                             _step2Ref.current.validate();
                             console.log("11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=***************")
-                            //  setIndex(index + 1);
+                             setIndex(index + 1);
 
                           }
                         }
                         break;
+                      
+                        case 2:
+                          {
+                            if (_step2Ref.current != undefined) {
+                              console.log("validateClick-===-=--==-=-=-=-=-=-=-=-=-=")
+                              _step2Ref.current.validateClick();
+                              console.log("validateClick-===-=--==-=-=-=-=-=-=-=-=-=***************")
+                               setIndex(index + 1);
+  
+                            }
+                          }
+                          break;
 
                       default:
                         break;
