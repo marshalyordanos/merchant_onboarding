@@ -60,7 +60,7 @@ export class Department {
             logo: department["logo"],
             regDate: department["reg_date"],
             addresses: department["addresses"] && (department["addresses"] as Map<string, any>[]).map((e: Map<string, any>) => Address.fromJSON(e)),
-            categories: department["categories"] && department["categories"].map((e: Map<string, any>) => Category.fromJSON(e)),
+            categories: department["categories"].map((e: Map<string, any>) => Category.fromJSON(e)),
             services: department["services"] && (department["services"] as Map<string, any>[]).map((e) => Service.fromJSON(e)),
             offers: department["offers"] && (department["offers"] as Map<string, any>[]).map((e: Map<string, any>) => Offer.fromJSON(e)),
             details: department["details"] /* Map later */,
@@ -105,7 +105,7 @@ export class Service {
             id: service["id"],
             name: service["name"],
             description: service["description"],
-            categories:service["categories"] && service["categories"].map((e: Map<string, any>) => Category.fromJSON(e)),
+            categories: service["categories"].map((e: Map<string, any>) => Category.fromJSON(e)),
             countryWhitelist: service["country_whitelist"],
             countryBlacklist: service["country_blacklist"],
         });

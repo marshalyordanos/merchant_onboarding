@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import "./_termsform.scss";
 export const TermsForm = ({ agreement, setAggrement }) => {
   // const agreeRef = useRef();
@@ -6,8 +6,17 @@ export const TermsForm = ({ agreement, setAggrement }) => {
     setAggrement(!agreement);
   };
   // useEffect(() => {
-  //   console.log("aggrement", agreement);
-  // }, [agreement]);
+  //   document.addEventListener("DOMContentLoaded", function () {
+  //     const element = document.getElementById("bottom_btn");
+  //     if (element) {
+  //       console.log(element, "element&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+  //       // const elementHeight = element.clientHeight;
+  //       // console.log("Element Height:", elementHeight);
+  //     } else {
+  //       console.log("Element with id 'bottom_btn' not found.");
+  //     }
+  //   });
+  // });
   return (
     <div className="terms-container">
       <h1 className="terms-title">Terms and Conditions</h1>
@@ -59,16 +68,17 @@ export const TermsForm = ({ agreement, setAggrement }) => {
           of these terms or for any other reason deemed necessary by LakiPay.
           You may also terminate your account by providing written notice.
         </p>
+        <label htmlFor="checkbox">
+          {" "}
+          <input
+            onChange={handleChange}
+            type="checkbox"
+            name="checkbox"
+            className="checkbox_input"
+          />
+          I agree to the terms and conditions.
+        </label>
       </div>
-      <form>
-        <input
-          onChange={handleChange}
-          type="checkbox"
-          name="checkbox"
-          className="checkbox_input"
-        />
-        I agree to the terms and conditions.
-      </form>
     </div>
   );
 };

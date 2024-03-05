@@ -15,15 +15,13 @@ import { Category } from "../../models/category/category";
 import { Country, CountryFlags } from "../../models/country/country";
 import { EthBusOrgForm } from "./widgets/forms/eth_bus_org_form";
 import { TermsForm } from "./widgets/forms/terms_form";
-import { Department } from "../../models/department/department";
-import Department_service from "./widgets/forms/Department_service";
 
 axios.defaults.baseURL = "http://localhost:5005";
 axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
 axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
 
 export const Home = () => {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(2);
   const router = useRouter();
 
   const {
@@ -36,16 +34,14 @@ export const Home = () => {
   const [selectedOrgType, setSelectedOrgType] = useState<Category | null>();
   const [countries, setCountries] = useState<Country[] | null>();
   const [selectedCountry, setSelectedCountry] = useState<Country | null>();
-  const [department,setDepartment] = useState<Department[] | null>([]);
-
-
+  const [agreement, setAgreement] = useState<boolean>(false);
   const fetchCategories = async () => {
     try {
       const res = await axios.get("/orgs/categories");
       var orgTypes: Category[] = (res.data["data"] as Map<string, any>[]).map(
         (e) => Category.fromJSON(e)
       );
-      console.log("orgTypes",orgTypes);
+      console.log("orgTypes", orgTypes);
       setOrgTypes(orgTypes.filter((e) => e.Parents.length == 0));
     } catch (error) {}
   };
@@ -99,8 +95,7 @@ export const Home = () => {
             required
             className={`dropdown_input ${
               typeErrors["orgType"] != undefined ? " error" : ""
-            }`}
-          >
+            }`}>
             <option value="" disabled>
               Select organization type
             </option>
@@ -143,8 +138,7 @@ export const Home = () => {
                 required
                 className={`dropdown_input ${
                   typeErrors["country"] != undefined ? " error" : ""
-                }`}
-              >
+                }`}>
                 <option value="" disabled>
                   Select country
                 </option>
@@ -182,15 +176,14 @@ export const Home = () => {
             onClick={() => {
               router.replace("/cancel");
             }}
-            className="home_content_header--leading"
-          >
+            className="home_content_header--leading">
             ⤬
           </div>
           <div className="home_content_header--title">Merchant Onboarding</div>
           <div className="home_content_header--actions"></div>
         </div>
         <div className="home_content_body">
-          {orgTypes == null || countries == null ? (
+          {orgTypes != null || countries != null ? (
             <div className="column"> Loading </div>
           ) : (
             <div className="column">
@@ -212,22 +205,14 @@ export const Home = () => {
                       index={2}
                       isActive={index == 1}
                     />,
-                    
                     // <Step title={"Business Registration"} subtitle={"Select the organization's origin and type"} key={2} index={3} isActive={index == 2} />,
                     <Step
-                      title={"Department & Service"}
-                      subtitle={"Select the organization's department and service"}
+                      title={"Terms & Conditions"}
+                      subtitle={"Aggree to the terms and conditions"}
                       key={2}
                       index={3}
                       isActive={index == 2}
                     />,
-                    <Step
-                    title={"Terms & Conditions"}
-                    subtitle={"Select the organization's origin and type"}
-                    key={3}
-                    index={4}
-                    isActive={index == 3}
-                  />,
                     // <Step title={"Terms & Conditions"} subtitle={"Select the organization's origin and type"} key={3} index={4} isActive={index == 3} />,
                   ]}
                 />
@@ -245,11 +230,10 @@ export const Home = () => {
                       ) {
                         _step2 = (
                           <EthBusOrgForm
-                            setDepartment={setDepartment}
                             onSubmit={(v) => {
                               console.log("step23");
 
-                              console.log("step23 ---000",v);
+                              console.log("step23", v);
                             }}
                             ref={_step2Ref}
                           />
@@ -257,21 +241,20 @@ export const Home = () => {
                       }
                       return _step2;
                     }
-                   
-                    case 2:
+                    case 2: {
+                      var _termsForm = (
+                        <TermsForm
+                          agreement={agreement}
+                          setAggrement={setAgreement}
+                        />
+                      );
+                      return _termsForm;
+                    }
+                    case 3: {
                       {
-                        return <Department_service departments={department}  onSubmit={(v) => {
-                          console.log("step23");
-
-                          console.log("step23",v);
-                        }}
-                        ref={_step2Ref}  />;
+                        agreement && "_primForm go to the success page";
                       }
-                    
-                      case 3: {
-                        var _termsForm = <TermsForm />;
-                        return _termsForm;
-                      }
+                    }
 
                     default:
                       break;
@@ -284,40 +267,30 @@ export const Home = () => {
                     switch (index) {
                       case 0: {
                         typeHandleSubmit((v) => {
-                          console.log("value---- ",v);
+                          console.log("value---- ", v);
                           setIndex(index + 1);
                         })();
                       }
                       case 1:
                         {
                           if (_step2Ref.current != undefined) {
-                            console.log("11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=")
-                            _step2Ref.current.validate();
-                            console.log("11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=***************")
-                             setIndex(index + 1);
-
+                            console.log(
+                              "11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-="
+                            );
+                            _step2Ref.current;
+                            console.log(
+                              "11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=***************"
+                            );
+                            //  setIndex(index + 1);
                           }
                         }
                         break;
-                      
-                        case 2:
-                          {
-                            if (_step2Ref.current != undefined) {
-                              console.log("validateClick-===-=--==-=-=-=-=-=-=-=-=-=")
-                              _step2Ref.current.validateClick();
-                              console.log("validateClick-===-=--==-=-=-=-=-=-=-=-=-=***************")
-                               setIndex(index + 1);
-  
-                            }
-                          }
-                          break;
 
                       default:
                         break;
                     }
                   }}
-                  className="btn"
-                >
+                  className="btn">
                   Continue &nbsp; &rarr;{" "}
                 </div>
                 {index > 0 && (
@@ -326,8 +299,7 @@ export const Home = () => {
                       setIndex(index - 1);
                     }}
                     style={{ marginLeft: "1.6rem" }}
-                    className="btn outline"
-                  >
+                    className="btn outline">
                     Back
                   </div>
                 )}
