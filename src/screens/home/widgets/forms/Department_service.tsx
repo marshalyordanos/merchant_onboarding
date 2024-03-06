@@ -20,23 +20,36 @@ const Department_service = forwardRef(
     },
     ref: React.ForwardedRef<any>
   ) => {
+    // console.log(props.department,props.departments)
     const [options, setOptions] = useState();
     // const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [services, setServices] = useState([]);
     // const [departments, setDepartments] = useState([]);
     // const [data, setData] = useState([]);
     // console.log("======++++++++++", props.departments);
-    const data = props.departments.map((dept) => JSON.stringify(dept));
+    const data = props.departments.map((dept) => {
+      const d = {...dept}
+      if(d.category_id){
+        delete d.category_id
+        delete d.category_name
+      }
+      console.log("data0",d)
+      
+     return JSON.stringify(d)
+    });
+    console.log("data1",props.department)
     useEffect(() => {
       const x: any = props.department.map((d) => ({
-        value: JSON.stringify({ ...d, services: [] }),
+        value: JSON.stringify( d ),
         label: d["name"] + " - " + d["LicenceNumber"],
       }));
       // const y: any = props.departments.map((d) => (
       //   JSON.stringify(d),
       // ));
+  
 
-      console.log("======++++++++++department", x);
+
+      // console.log("======++++++++++department", x);
       // console.log("======++++++++++departments", props.departments);
       setOptions(x);
       // setData(y);
@@ -44,23 +57,24 @@ const Department_service = forwardRef(
 
     useImperativeHandle(ref, () => ({
       validateClick() {
-        console.log("validateClick ----");
+        // console.log("validateClick ----");
         props.onSubmit(props.departments);
-        console.log("validateClick ----*****");
+        // console.log("validateClick ----*****");
       },
     }));
     const handleChange = (value: string[], d: any) => {
-      console.log(value, "value from on change)))))))))))))))))))))000");
+      // console.log(value, "value from on change)))))))))))))))))))))000");
       // console.log(`selected 33 ${value.length}`);
       const val = value.map((v) => JSON.parse(v));
-      console.log(val, "val^^^^^^^^^^^^^^^^96");
+      // console.log(val, "val^^^^^^^^^^^^^^^^96");
       const cat = val.map(async (dep) => {
-        const len = dep["services"].length - 1;
+        console.log("sub_categories",dep)
+        const len = dep["sub_categories"].length - 1;
         if (len < 0) {
           return {};
         } else {
           const res = await axios.get(
-            `/orgs/etrade_code?code=${dep["services"][len]["Code"]}`
+            `/orgs/etrade_code?code=${dep["sub_categories"][len]["Code"]}`
           );
           // console.log(val, "selected values from slect multiple");
           // console.log("repsonse data %%%%%%%%%%%%%%%%%%%%", res.data["data"]);
@@ -79,7 +93,7 @@ const Department_service = forwardRef(
           if (!isAlreadyAdded) {
             props.setDepartments([...props.departments, addID]);
           } else {
-            console.log("isalready added%%%%%%%%%%%%%%%%%%%%");
+            // console.log("isalready added%%%%%%%%%%%%%%%%%%%%");
             // console.log(
             //   "props.departments currently added%%%%%%%%%%%%%%%%%%%%",
             //   props.departments
@@ -96,18 +110,18 @@ const Department_service = forwardRef(
     const handleDeselect = (value: string) => {
       const parsedValue = JSON.parse(value);
       // console.log()
-      console.log("potentially deselected value", parsedValue);
+      // console.log("potentially deselected value", parsedValue);
       const categoryAfterDeletion = props.departments.filter(
         (cat) => cat.LicenceNumber !== parsedValue.LicenceNumber
       );
-      console.log("category after deletion", categoryAfterDeletion);
+      // console.log("category after deletion", categoryAfterDeletion);
       props.setDepartments(categoryAfterDeletion);
     };
     const handleClear = () => {
       props.setDepartments([]);
     };
     useEffect(() => {
-      console.log("props.departments######################", props.departments);
+      // console.log("props.departments######################", props.departments);
     }, [props.departments]);
     const serviceHandleChange = (value: string[]) => {
       // console.log(`selected ${value.length}`);
@@ -115,7 +129,7 @@ const Department_service = forwardRef(
       const data = value.map((v) => JSON.parse(v));
       const id = data[0].id;
       const newData = data.map((d) => {
-        console.log("id", id);
+        // console.log("id", id);
         // const service = value.
         // if(d["LicenceNumber"])
       });
