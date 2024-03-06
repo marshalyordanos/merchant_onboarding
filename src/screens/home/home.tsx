@@ -15,13 +15,15 @@ import { Category } from "../../models/category/category";
 import { Country, CountryFlags } from "../../models/country/country";
 import { EthBusOrgForm } from "./widgets/forms/eth_bus_org_form";
 import { TermsForm } from "./widgets/forms/terms_form";
+import { Department } from "../../models/department/department";
+import Department_service from "./widgets/forms/Department_service";
 
-axios.defaults.baseURL = "http://localhost:5005";
+axios.defaults.baseURL = "http://192.168.0.115:5005";
 axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
 axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
 
 export const Home = () => {
-  const [index, setIndex] = useState(2);
+  const [index, setIndex] = useState(0);
   const router = useRouter();
 
   const {
@@ -29,12 +31,24 @@ export const Home = () => {
     handleSubmit: typeHandleSubmit,
     formState: { errors: typeErrors },
   } = useForm();
-
+  const [orgInfo, setOrgInfo] = useState({});
   const [orgTypes, setOrgTypes] = useState<Category[] | null>();
   const [selectedOrgType, setSelectedOrgType] = useState<Category | null>();
   const [countries, setCountries] = useState<Country[] | null>();
   const [selectedCountry, setSelectedCountry] = useState<Country | null>();
+  const [department, setDepartment] = useState<Department[] | null>([]);
+  const [departments, setDeparments] = useState([]);
+  //to be removed later
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [sampleOrgInfo, setSampleOrgInfo] = useState({});
   const [agreement, setAgreement] = useState<boolean>(false);
+  const buttonText = index === 3 ? "Save" : "Continue \u00A0 \u2192";
+  useEffect(() => {
+    console.log(
+      "orginfo((((((((((((((((((((((((((9))))))))))))))))))))))))))",
+      orgInfo
+    );
+  }, [orgInfo]);
   const fetchCategories = async () => {
     try {
       const res = await axios.get("/orgs/categories");
@@ -64,6 +78,67 @@ export const Home = () => {
     fetchCountries();
   }, []);
 
+  const uploadFile = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket_id", "ba670353-87a0-4396-90c5-07a0a1e67a99");
+      formData.append("dir", "orgFile/files");
+      formData.append(
+        "token",
+        "Jzhnn82ioq/+glTAHkDptMmd+6HTxM+cRH+dNtkfL21GRE2VaUxIWo2fL7WgN6qh9NWz9CwkXwmmux3FqM1oGe7HMgNpyhkWZN2a84Hzy2yydyH6QJBih3voouRRxpG69D7obGVyuFbayeFHnbTcjQlos6E9QxuLgsoaVjCUXkJJrS8y/qIhPxLZJzf0cRim5MnaGP9iZphA9UXT5L+I42bSgSwstyT6ISRrt6AyNzM2ye9XVQmqEgqxrn+dnidmarEwcsvzW731jdjiD+EXU/u9ecj+lI4EA8x8alTkkIs/aJwYvO/cIhwK0duYtOba92rM61EqpKVwFuve6PWeGw=="
+      );
+      formData.append("key", "lakipay");
+
+      const response = await fetch("http://196.189.126.183:5000/v1/objects", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+
+      // console.log(response.json());
+      const filePath = `http://196.189.126.183:5000/v1/objects/file/${data.path}`;
+
+      return filePath;
+    } catch (error) {
+      console.error("File upload error:", error);
+
+      return null;
+    }
+  };
+
+  const processFiles = async (dataObject: any) => {
+    const updatedDataObject = {};
+    await Promise.all(
+      Object.keys(dataObject).map(async (key) => {
+        const value = dataObject[key];
+
+        if (value instanceof File) {
+          updatedDataObject[key] = await uploadFile(value);
+        } else if (typeof value === "object" && value !== null) {
+          updatedDataObject[key] = await processFiles(value);
+        } else {
+          updatedDataObject[key] = value;
+        }
+      })
+    );
+    return updatedDataObject;
+  };
+  const handleOrgInfoSubmit = (data) => {
+    const response = axios.post("/orgs");
+  };
+  useEffect(() => {
+    console.log("index##########################################", index);
+    if (agreement && index === 3) {
+      processFiles(orgInfo).then((updatedDataObject) => {
+        console.log("Updated Data Object:", updatedDataObject);
+        // send to merchant on board api after converitng file to path
+      });
+    } else {
+      console.log(agreement, index, selectedFile, "the three conditionals");
+      console.log("please agree to teh terms and conditions");
+    }
+  }, [index, orgInfo, agreement]);
   const _primForm = (
     <div className="column">
       <div className="expanded">
@@ -79,7 +154,10 @@ export const Home = () => {
           <select
             {...typeRegister("orgType", {
               onChange: (v) => {
-                console.log(v.target.value);
+                console.log(
+                  v.target.value,
+                  "org type value*******************"
+                );
                 console.log(orgTypes.find((e) => e.Id == v.target.value));
                 setSelectedOrgType(
                   orgTypes.find((e) => e.Id == v.target.value)
@@ -124,9 +202,15 @@ export const Home = () => {
                 {...typeRegister("country", {
                   onChange: (v) => {
                     console.log(v.target.value);
-                    console.log(countries.find((e) => e.Id == v.target.value));
+                    console.log(
+                      countries.find(
+                        (e) => e.Iso2 + "_" + e.Name == v.target.value
+                      )
+                    );
                     setSelectedCountry(
-                      countries.find((e) => e.Id == v.target.value)
+                      countries.find(
+                        (e) => e.Iso2 + "_" + e.Name == v.target.value
+                      )
                     );
                   },
                   required: {
@@ -134,7 +218,12 @@ export const Home = () => {
                     message: "Field is required",
                   },
                 })}
-                value={(selectedCountry && selectedCountry.Id) ?? ""}
+                //change iso2 to id
+                value={
+                  (selectedCountry &&
+                    selectedCountry.Iso2 + "_" + selectedCountry.Name) ??
+                  ""
+                }
                 required
                 className={`dropdown_input ${
                   typeErrors["country"] != undefined ? " error" : ""
@@ -149,7 +238,7 @@ export const Home = () => {
                     )
                     .map((e) => {
                       return (
-                        <option key={e.Id} value={e.Id}>
+                        <option key={e.Id} value={e.Iso2 + "_" + e.Name}>
                           {" "}
                           {CountryFlags[e.Iso2]} &nbsp; {e.Name}
                         </option>
@@ -167,6 +256,8 @@ export const Home = () => {
 
   var _step2: React.JSX.Element;
   const _step2Ref = useRef();
+  const _step3Ref = useRef();
+  const _step4Ref = useRef();
 
   return (
     <div className="home">
@@ -183,7 +274,7 @@ export const Home = () => {
           <div className="home_content_header--actions"></div>
         </div>
         <div className="home_content_body">
-          {orgTypes != null || countries != null ? (
+          {orgTypes === null || countries === null ? (
             <div className="column"> Loading </div>
           ) : (
             <div className="column">
@@ -205,13 +296,23 @@ export const Home = () => {
                       index={2}
                       isActive={index == 1}
                     />,
+
                     // <Step title={"Business Registration"} subtitle={"Select the organization's origin and type"} key={2} index={3} isActive={index == 2} />,
                     <Step
-                      title={"Terms & Conditions"}
-                      subtitle={"Aggree to the terms and conditions"}
+                      title={"Department & Service"}
+                      subtitle={
+                        "Select the organization's department and service"
+                      }
                       key={2}
                       index={3}
                       isActive={index == 2}
+                    />,
+                    <Step
+                      title={"Terms & Conditions"}
+                      subtitle={"Select the organization's origin and type"}
+                      key={3}
+                      index={4}
+                      isActive={index == 3}
                     />,
                     // <Step title={"Terms & Conditions"} subtitle={"Select the organization's origin and type"} key={3} index={4} isActive={index == 3} />,
                   ]}
@@ -230,10 +331,60 @@ export const Home = () => {
                       ) {
                         _step2 = (
                           <EthBusOrgForm
+                            setDepartment={setDepartment}
                             onSubmit={(v) => {
                               console.log("step23");
 
-                              console.log("step23", v);
+                              console.log("step23 ---000", v);
+                              setOrgInfo({
+                                ...orgInfo,
+                                name: v.name,
+                                description: v.description,
+                                logo: v.logo[0],
+                                capital: v.capital,
+                                reg_date: v.regDate,
+                                legal_condition_id: v.legalCondition,
+                                taxes: [
+                                  {
+                                    tax: v.orgTax,
+                                    file: v.tax[0],
+                                    status: {
+                                      verified: false,
+                                      status: "",
+                                      message: "",
+                                    },
+                                  },
+                                ],
+                                departments: [],
+                                associates: [
+                                  {
+                                    position: v.associatePosition,
+                                    phone_number: v.associatePhonenumber,
+                                    full_name: v.associateFullname,
+                                  },
+                                ],
+                                details: {
+                                  TIN: v.tin,
+                                  TINFile: v.tax[0],
+                                  RegNo: v.regNo,
+                                  RegFile: v.regFile[0],
+                                  Status: {
+                                    Id: "00000000-0000-0000-0000-000000000000",
+                                    Verified: false,
+                                    Status: "",
+                                    Message: "",
+                                  },
+                                },
+                                status: {
+                                  verified: false,
+                                  status: "",
+                                  message: "",
+                                },
+                                retention_status: {
+                                  can_retain: false,
+                                  file: "",
+                                },
+                              });
                             }}
                             ref={_step2Ref}
                           />
@@ -241,7 +392,25 @@ export const Home = () => {
                       }
                       return _step2;
                     }
+
                     case 2: {
+                      return (
+                        <Department_service
+                          departments={departments}
+                          department={department}
+                          setDepartments={setDeparments}
+                          onSubmit={(v) => {
+                            console.log("step23");
+
+                            console.log("departsments", v);
+                            setOrgInfo({ ...orgInfo, departments: v });
+                          }}
+                          ref={_step3Ref}
+                        />
+                      );
+                    }
+
+                    case 3: {
                       var _termsForm = (
                         <TermsForm
                           agreement={agreement}
@@ -250,10 +419,10 @@ export const Home = () => {
                       );
                       return _termsForm;
                     }
-                    case 3: {
-                      {
-                        agreement && "_primForm go to the success page";
-                      }
+                    case 4: {
+                      agreement
+                        ? console.log("last save step")
+                        : console.log("not agreed so no continue to last step");
                     }
 
                     default:
@@ -268,6 +437,12 @@ export const Home = () => {
                       case 0: {
                         typeHandleSubmit((v) => {
                           console.log("value---- ", v);
+                          setOrgInfo({
+                            ...orgInfo,
+                            category_id: v.orgType,
+                            country: v.country.slice(0, 2),
+                          });
+
                           setIndex(index + 1);
                         })();
                       }
@@ -277,11 +452,42 @@ export const Home = () => {
                             console.log(
                               "11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-="
                             );
-                            _step2Ref.current;
+                            _step2Ref.current.validate();
                             console.log(
                               "11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=***************"
                             );
-                            //  setIndex(index + 1);
+                            setIndex(index + 1);
+                          }
+                        }
+                        break;
+
+                      case 2:
+                        {
+                          if (_step3Ref.current != undefined) {
+                            console.log(
+                              "validateClick-===-=--==-=-=-=-=-=-=-=-=-=case2"
+                            );
+
+                            _step3Ref.current.validateClick();
+                            console.log(
+                              "validateClick-===-=--==-=-=-=-=-=-=-=-=-=***************case2"
+                            );
+                            setIndex(index + 1);
+                          }
+                        }
+                        break;
+                      case 3:
+                        {
+                          if (_step4Ref.current != undefined) {
+                            console.log(
+                              "validateClick-===-=--==-=-=-=-=-=-=-=-=-=case3"
+                            );
+
+                            _step4Ref.current.validateClick();
+                            console.log(
+                              "validateClick-===-=--==-=-=-=-=-=-=-=-=-=***************case3"
+                            );
+                            // setIndex(index + 1);
                           }
                         }
                         break;
@@ -291,7 +497,8 @@ export const Home = () => {
                     }
                   }}
                   className="btn">
-                  Continue &nbsp; &rarr;{" "}
+                  {/* Continue &nbsp; &rarr; */}
+                  {buttonText}
                 </div>
                 {index > 0 && (
                   <div

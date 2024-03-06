@@ -1,1 +1,9 @@
+<<<<<<< HEAD
 node_modules
+=======
+/node_modules
+node_modules
+node_modules/*
+/.next
+.next/
+>>>>>>> 0a03d698d02f92fe16c732d35076d5662348a791

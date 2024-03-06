@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import "./_termsform.scss";
-export const TermsForm = ({ agreement, setAggrement }) => {
+export const TermsForm = ({
+  agreement,
+  setAggrement,
+
+}) => {
   // const agreeRef = useRef();
+  // const [uploadedFilePath, setUploadedFilePath] = useState(null);
   const handleChange = () => {
     setAggrement(!agreement);
   };
+  // const handleFileChange = (event) => {
+  //   setSelectedFile(event.target.files[0]);
+  //   setSampleOrgInfo({
+  //     ...sampleOrgInfo,
+  //     logo: event.target.files[0],
+  //     category: {
+  //       id: "2",
+  //       name: "2",
+  //     },
+  //     details: {
+  //       TIN: "3",
+  //       TINFile: event.target.files[0],
+  //       RegNo: "4",
+  //       RegFile: event.target.files[0],
+  //     },
+  //   });
+  // };
   // useEffect(() => {
   //   document.addEventListener("DOMContentLoaded", function () {
   //     const element = document.getElementById("bottom_btn");
@@ -20,7 +42,8 @@ export const TermsForm = ({ agreement, setAggrement }) => {
   return (
     <div className="terms-container">
       <h1 className="terms-title">Terms and Conditions</h1>
-
+      {/* <input type="file" onChange={handleFileChange} /> */}
+      {/* <button onClick={handleUpload}>Upload</button> */}
       <div className="terms-content">
         <p>
           Welcome to LakiPay! By accessing and using our Merchant Onboarding
