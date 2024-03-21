@@ -41,3 +41,25 @@ ol {
   display: flex;
   flex-direction: column;
 }
+.collapse_dept {
+  // border: 1px solid red;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.dept_file_not {
+  color: rgb(255, 34, 60);
+  border: 1px solid rgb(255, 34, 60);
+  background-color: rgba(255, 34, 60, 0.151);
+  border-radius: 20px;
+  font-weight: 700;
+  padding: 8px 10px 8px 10px;
+}
+.dept_file_add {
+  color: #0ab80a;
+  border: 1px solid #0ab80a;
+  background-color: #0ab80a2f;
+  border-radius: 20px;
+  font-weight: 700;
+  padding: 8px 10px 8px 10px;
+}

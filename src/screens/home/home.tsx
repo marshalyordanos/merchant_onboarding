@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-
 import "./_home.scss";
 import { Stepper } from "./widgets/stepper/stepper";
 import { Step } from "./widgets/step/step";
@@ -17,8 +16,9 @@ import { EthBusOrgForm } from "./widgets/forms/eth_bus_org_form";
 import { TermsForm } from "./widgets/forms/terms_form";
 import { Department } from "../../models/department/department";
 import Department_service from "./widgets/forms/Department_service";
+import { message, Button, Result, Modal } from "antd";
 
-axios.defaults.baseURL = "http://192.168.0.115:5005";
+axios.defaults.baseURL = "http://196.189.126.183:5005";
 axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
 axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
 
@@ -26,6 +26,25 @@ export const Home = () => {
   const [index, setIndex] = useState(0);
   const router = useRouter();
 
+  const modalStyles = {
+    header: {
+      borderRadius: 0,
+      paddingInlineStart: 5,
+    },
+    body: {
+      boxShadow: "inset 0 0 5px #999",
+      borderRadius: 5,
+    },
+    mask: {
+      backdropFilter: "blur(10px)",
+    },
+    footer: {
+      borderTop: "1px solid #333",
+    },
+    content: {
+      boxShadow: "0 0 30px #999",
+    },
+  };
   const {
     register: typeRegister,
     handleSubmit: typeHandleSubmit,
@@ -42,7 +61,14 @@ export const Home = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [sampleOrgInfo, setSampleOrgInfo] = useState({});
   const [agreement, setAgreement] = useState<boolean>(false);
-  const buttonText = index === 3 ? "Save" : "Continue \u00A0 \u2192";
+  const [loading, setLoading] = useState<boolean>(false);
+  const [resultView, setResultView] = useState<boolean>(false);
+  const buttonText =
+    index === 3 && !loading
+      ? "Save"
+      : index === 3 && loading
+      ? "Saving..."
+      : "Continue \u00A0 \u2192";
   useEffect(() => {
     console.log(
       "orginfo((((((((((((((((((((((((((9))))))))))))))))))))))))))",
@@ -63,6 +89,7 @@ export const Home = () => {
   const fetchCountries = async () => {
     try {
       const res = await axios.get("/help/countries");
+      console.log(res, "country fetch bres");
       var countries: Country[] = (res.data["data"] as Map<string, any>[]).map(
         (e) => Country.fromJSON(e)
       );
@@ -94,9 +121,10 @@ export const Home = () => {
         method: "POST",
         body: formData,
       });
-      const data = await response.json();
+      // console.log(await response.json(), "response");
 
-      // console.log(response.json());
+      const data = await response.json();
+      console.log(data);
       const filePath = `http://196.189.126.183:5000/v1/objects/file/${data.path}`;
 
       return filePath;
@@ -106,15 +134,31 @@ export const Home = () => {
       return null;
     }
   };
-
+  useEffect(() => {
+    console.log("loading state...$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$", loading);
+  }, [loading]);
   const processFiles = async (dataObject: any) => {
-    const updatedDataObject = {};
+    setLoading(true);
+
+    const updatedDataObject: any = {};
+
     await Promise.all(
       Object.keys(dataObject).map(async (key) => {
         const value = dataObject[key];
 
         if (value instanceof File) {
           updatedDataObject[key] = await uploadFile(value);
+        } else if (Array.isArray(value)) {
+          // Preserve array structure
+          updatedDataObject[key] = await Promise.all(
+            value.map(async (arrayItem) => {
+              if (typeof arrayItem === "object" && arrayItem !== null) {
+                return await processFiles(arrayItem);
+              } else {
+                return arrayItem;
+              }
+            })
+          );
         } else if (typeof value === "object" && value !== null) {
           updatedDataObject[key] = await processFiles(value);
         } else {
@@ -122,23 +166,16 @@ export const Home = () => {
         }
       })
     );
+    setLoading(false);
     return updatedDataObject;
   };
-  const handleOrgInfoSubmit = (data) => {
-    const response = axios.post("/orgs");
+  const handleOrgInfoSubmit = async (data: any) => {
+    const response = await axios.post("/orgs", data);
+    console.log(response, "final repsonse");
+
+    return response;
   };
-  useEffect(() => {
-    console.log("index##########################################", index);
-    if (agreement && index === 3) {
-      processFiles(orgInfo).then((updatedDataObject) => {
-        console.log("Updated Data Object:", updatedDataObject);
-        // send to merchant on board api after converitng file to path
-      });
-    } else {
-      console.log(agreement, index, selectedFile, "the three conditionals");
-      console.log("please agree to teh terms and conditions");
-    }
-  }, [index, orgInfo, agreement]);
+
   const _primForm = (
     <div className="column">
       <div className="expanded">
@@ -257,7 +294,7 @@ export const Home = () => {
   var _step2: React.JSX.Element;
   const _step2Ref = useRef();
   const _step3Ref = useRef();
-  const _step4Ref = useRef();
+  // const _step4Ref = useRef();
 
   return (
     <div className="home">
@@ -334,19 +371,21 @@ export const Home = () => {
                             setDepartment={setDepartment}
                             onSubmit={(v) => {
                               console.log("step23");
-
                               console.log("step23 ---000", v);
+                              const [year, month, day] = v.regDate.split("-");
+                              const convertedDate = `${month}/${day}/${year}`;
+                              // const formatted
                               setOrgInfo({
                                 ...orgInfo,
                                 name: v.name,
                                 description: v.description,
                                 logo: v.logo[0],
                                 capital: v.capital,
-                                reg_date: v.regDate,
+                                reg_date: convertedDate,
                                 legal_condition_id: v.legalCondition,
                                 taxes: [
                                   {
-                                    tax: v.orgTax,
+                                    tax_id: v.orgTax,
                                     file: v.tax[0],
                                     status: {
                                       verified: false,
@@ -413,6 +452,13 @@ export const Home = () => {
                     case 3: {
                       var _termsForm = (
                         <TermsForm
+                          // onSubmit={(v) => {
+                          //   console.log("step23");
+
+                          //   console.log("departsments", v);
+                          //   setOrgInfo({ ...orgInfo, departments: v });
+                          // }}
+                          ref={_step3Ref}
                           agreement={agreement}
                           setAggrement={setAgreement}
                         />
@@ -431,7 +477,8 @@ export const Home = () => {
                 })()}
               </div>
               <div className="row">
-                <div
+                <button
+                  // disabled={!agreement}
                   onClick={() => {
                     switch (index) {
                       case 0: {
@@ -453,8 +500,10 @@ export const Home = () => {
                               "11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-="
                             );
                             _step2Ref.current.validate();
+                            // .validateClick();
                             console.log(
                               "11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=***************"
+                              // _step2Ref.current.value
                             );
                             setIndex(index + 1);
                           }
@@ -478,17 +527,45 @@ export const Home = () => {
                         break;
                       case 3:
                         {
-                          if (_step4Ref.current != undefined) {
-                            console.log(
-                              "validateClick-===-=--==-=-=-=-=-=-=-=-=-=case3"
-                            );
+                          // if (_step4Ref.current != undefined) {
+                          console.log(
+                            "validateClick-===-=--==-=-=-=-=-=-=-=-=-=case3",
+                            index
+                          );
+                          if (agreement) {
+                            processFiles(orgInfo).then((updatedDataObject) => {
+                              console.log(
+                                "Updated Data Object:",
+                                updatedDataObject
+                              );
+                              // send to merchant on board api after converitng file to path
 
-                            _step4Ref.current.validateClick();
-                            console.log(
-                              "validateClick-===-=--==-=-=-=-=-=-=-=-=-=***************case3"
+                              handleOrgInfoSubmit(updatedDataObject).then(
+                                (res) => {
+                                  console.log(
+                                    res,
+                                    "repsosneinside the case three button"
+                                  );
+
+                                  if (res.status === 200) {
+                                    setResultView(true);
+                                  } else {
+                                    message.error("An error occurred");
+                                  }
+                                }
+                              );
+                            });
+                          } else {
+                            message.info(
+                              "Please agree to the terms and conditions"
                             );
-                            // setIndex(index + 1);
                           }
+                          // _step4Ref.current.validateClick();
+                          console.log(
+                            "validateClick-===-=--==-=-=-=-=-=-=-=-=-=***************case3"
+                          );
+                          // setIndex(index + 1);
+                          // }
                         }
                         break;
 
@@ -499,7 +576,8 @@ export const Home = () => {
                   className="btn">
                   {/* Continue &nbsp; &rarr; */}
                   {buttonText}
-                </div>
+                </button>
+
                 {index > 0 && (
                   <div
                     onClick={() => {
@@ -514,6 +592,31 @@ export const Home = () => {
             </div>
           )}
         </div>
+
+        <Modal
+          closeIcon={null}
+          maskClosable={false}
+          onCancel={() => {
+            window.location.reload();
+          }}
+          open={resultView}
+          footer={null}>
+          <Result
+            status="success"
+            title="Organization registration successful!"
+            subTitle="Please wait while we verify your documents."
+            extra={[
+              <a
+                className="btn_stl_result"
+                href=""
+                key="go"
+                onClick={() => window.location.reload()}>
+                Go to Dashboard
+              </a>,
+            ]}
+          />
+        </Modal>
+
         <div className="home_content_footer">
           &copy; LakiPay 2024, All rights reserved.
         </div>

@@ -28,47 +28,54 @@ const Department_service = forwardRef(
     // const [data, setData] = useState([]);
     // console.log("======++++++++++", props.departments);
     const data = props.departments.map((dept) => {
-      const d = {...dept}
-      if(d.category_id){
-        delete d.category_id
-        delete d.category_name
+      const dateOnly = dept?.reg_date?.split("/");
+      const [month, day, year] = dateOnly;
+      const formattedDate = `${day}/${month}/${year}`;
+      const d = { ...dept, id: "", reg_date: formattedDate };
+      if (d.category_id) {
+        delete d.category_id;
+        delete d.category_name;
+        delete d.file;
+        delete d.licence_number;
+        // delete d.id;
       }
-      console.log("data0",d)
-      
-     return JSON.stringify(d)
+      d.id = "";
+      console.log("data0", d);
+
+      return JSON.stringify(d);
     });
-    console.log("data1",props.department)
+    console.log("data1", props.department);
     useEffect(() => {
       const x: any = props.department.map((d) => ({
-        value: JSON.stringify( d ),
+        value: JSON.stringify(d),
         label: d["name"] + " - " + d["LicenceNumber"],
       }));
       // const y: any = props.departments.map((d) => (
       //   JSON.stringify(d),
       // ));
-  
-
 
       // console.log("======++++++++++department", x);
       // console.log("======++++++++++departments", props.departments);
       setOptions(x);
       // setData(y);
     }, []);
-
+    useEffect(() => {
+      // console.log("_______________", props.departments);
+    }, [props.departments]);
     useImperativeHandle(ref, () => ({
       validateClick() {
-        // console.log("validateClick ----");
+        console.log("validateClick ---- props on submit");
         props.onSubmit(props.departments);
-        // console.log("validateClick ----*****");
+        console.log("validateClick ----*****");
       },
     }));
     const handleChange = (value: string[], d: any) => {
-      // console.log(value, "value from on change)))))))))))))))))))))000");
+      console.log(value, "value from on change)))))))))))))))))))))000");
       // console.log(`selected 33 ${value.length}`);
       const val = value.map((v) => JSON.parse(v));
       // console.log(val, "val^^^^^^^^^^^^^^^^96");
       const cat = val.map(async (dep) => {
-        console.log("sub_categories",dep)
+        console.log("sub_categories", dep);
         const len = dep["sub_categories"].length - 1;
         if (len < 0) {
           return {};
@@ -77,14 +84,22 @@ const Department_service = forwardRef(
             `/orgs/etrade_code?code=${dep["sub_categories"][len]["Code"]}`
           );
           // console.log(val, "selected values from slect multiple");
-          // console.log("repsonse data %%%%%%%%%%%%%%%%%%%%", res.data["data"]);
-          // console.log(dep, "dep$$$$$$$");
+          console.log("repsonse data %%%%%%%%%%%%%%%%%%%%", res.data["data"]);
+          console.log(dep, "dep$$$$$$$");
+          const dateOnly = dep?.reg_date?.split("/");
+          const [day, month, year] = dateOnly;
+          const formattedDate = `${month}/${day}/${year}`;
           const addID = {
             ...dep,
+            id: "00000000-0000-0000-0000-000000000000",
+            file: "",
+            licence_number: dep.LicenceNumber,
             category_id: res.data["data"].id,
             category_name: res.data["data"].name,
+            reg_date: formattedDate,
             services: [],
           };
+          console.log(addID, "add is $$$$$$$$$$$$$$$$$$$");
           // setDepartments([...props.departments,])
           // console.log("addID$$$$$$$$$$$$$$$$$$$$$$$$$", addID);
           const isAlreadyAdded = props.departments.find(
@@ -133,6 +148,35 @@ const Department_service = forwardRef(
         // const service = value.
         // if(d["LicenceNumber"])
       });
+    };
+    const handleFileChange = (file: File, departmentLicenceNumber: string) => {
+      props.setDepartments((prevDepartments) =>
+        prevDepartments.map((dept: any) =>
+          dept.LicenceNumber === departmentLicenceNumber
+            ? { ...dept, file: file }
+            : dept
+        )
+      );
+    };
+
+    const renderFileInput = (
+      departmentLicenceNumber: string,
+      defaultFile: File | null
+    ) => {
+      console.log(defaultFile, "file");
+      return (
+        <div className="file-input">
+          <input
+            type="file"
+            onChange={(e) =>
+              handleFileChange(e.target.files?.[0], departmentLicenceNumber)
+            }
+          />
+          <br />
+          <br />
+          {defaultFile && <p>Selected file: {defaultFile.name}</p>}
+        </div>
+      );
     };
     return (
       <div className="column">
@@ -209,7 +253,18 @@ const Department_service = forwardRef(
               <Collapse
                 items={props.departments?.map((dept: any) => ({
                   key: dept.LicenceNumber,
-                  label: `${dept.name} - ${dept.category_name}`,
+                  label: (
+                    <div className="collapse_dept">
+                      <p>
+                        {dept.name} - {dept.category_name}
+                      </p>
+                      {!dept?.file?.name ? (
+                        <p className="dept_file_not">File not added</p>
+                      ) : (
+                        <p className="dept_file_add">File added</p>
+                      )}
+                    </div>
+                  ),
                   children: (
                     <div className="department_detail">
                       <p>License Number: {dept.LicenceNumber}</p>
@@ -220,6 +275,7 @@ const Department_service = forwardRef(
                           ? `Description: ${dept.description}`
                           : ""}
                       </p>
+                      {renderFileInput(dept.LicenceNumber, dept.file)}
                     </div>
                   ),
                 }))}
