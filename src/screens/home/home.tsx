@@ -17,6 +17,7 @@ import { TermsForm } from "./widgets/forms/terms_form";
 import { Department } from "../../models/department/department";
 import Department_service from "./widgets/forms/Department_service";
 import { message, Button, Result, Modal } from "antd";
+import { Organization } from "../../models/organization/organization";
 
 axios.defaults.baseURL = "http://196.189.126.183:5005";
 axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
@@ -50,13 +51,75 @@ export const Home = () => {
     handleSubmit: typeHandleSubmit,
     formState: { errors: typeErrors },
   } = useForm();
-  const [orgInfo, setOrgInfo] = useState({});
+  const [orgInfo, setOrgInfo] = useState({
+    category_id: "",
+    country: "",
+    name: "",
+    description: "",
+    logo: "",
+    capital: "",
+    reg_date: "",
+    legal_condition_id: "",
+    // taxes: [
+    //   {
+    //     tax_id: v.orgTax,
+    //     file: v.tax[0],
+    //     status: {
+    //       verified: false,
+    //       status: "",
+    //       message: "",
+    //     },
+    //   },
+    // ],
+    departments: [],
+    associates: [
+      {
+        position: "",
+        phone_number: "",
+        full_name: "",
+      },
+    ],
+    details: {
+      TIN: "",
+      TINFile: "",
+      RegNo: "",
+      RegFile: "",
+      Status: {
+        Id: "00000000-0000-0000-0000-000000000000",
+        Verified: false,
+        Status: "",
+        Message: "",
+      },
+    },
+    status: {
+      verified: false,
+      status: "",
+      message: "",
+    },
+    retention_status: {
+      can_retain: false,
+      file: "",
+    },
+    taxes: [
+      {
+        tax_id: "39ff7fe8-1c5f-4523-aaf4-1a4ab260cdd4",
+        file: null,
+        status: {
+          verified: false,
+          status: "",
+          message: "",
+        },
+      },
+    ],
+  });
   const [orgTypes, setOrgTypes] = useState<Category[] | null>();
   const [selectedOrgType, setSelectedOrgType] = useState<Category | null>();
   const [countries, setCountries] = useState<Country[] | null>();
   const [selectedCountry, setSelectedCountry] = useState<Country | null>();
   const [department, setDepartment] = useState<Department[] | null>([]);
   const [departments, setDeparments] = useState([]);
+  const [org, setOrg] = useState<Organization>();
+
   //to be removed later
   const [selectedFile, setSelectedFile] = useState(null);
   const [sampleOrgInfo, setSampleOrgInfo] = useState({});
@@ -75,6 +138,12 @@ export const Home = () => {
       orgInfo
     );
   }, [orgInfo]);
+  useEffect(() => {
+    console.log(
+      "orginfo((((((((((((((((((((((((((9))))))))))))))))))))))))))",
+      org
+    );
+  }, [org]);
   const fetchCategories = async () => {
     try {
       const res = await axios.get("/orgs/categories");
@@ -292,8 +361,8 @@ export const Home = () => {
   );
 
   var _step2: React.JSX.Element;
-  const _step2Ref = useRef();
-  const _step3Ref = useRef();
+  const _step2Ref = useRef<any>();
+  const _step3Ref = useRef<any>();
   // const _step4Ref = useRef();
 
   return (
@@ -369,6 +438,10 @@ export const Home = () => {
                         _step2 = (
                           <EthBusOrgForm
                             setDepartment={setDepartment}
+                            org={org}
+                            setOrg={setOrg}
+                            orgInfo={orgInfo}
+                            setOrgInfo={setOrgInfo}
                             onSubmit={(v) => {
                               console.log("step23");
                               console.log("step23 ---000", v);
@@ -482,12 +555,12 @@ export const Home = () => {
                   onClick={() => {
                     switch (index) {
                       case 0: {
-                        typeHandleSubmit((v) => {
+                        typeHandleSubmit((v: any) => {
                           console.log("value---- ", v);
                           setOrgInfo({
                             ...orgInfo,
-                            category_id: v.orgType,
-                            country: v.country.slice(0, 2),
+                            category_id: v?.orgType,
+                            country: v?.country.slice(0, 2),
                           });
 
                           setIndex(index + 1);
@@ -517,7 +590,7 @@ export const Home = () => {
                               "validateClick-===-=--==-=-=-=-=-=-=-=-=-=case2"
                             );
 
-                            _step3Ref.current.validateClick();
+                            _step3Ref?.current?.validateClick();
                             console.log(
                               "validateClick-===-=--==-=-=-=-=-=-=-=-=-=***************case2"
                             );

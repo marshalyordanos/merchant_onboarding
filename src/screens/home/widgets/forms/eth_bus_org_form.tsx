@@ -14,7 +14,14 @@ import { Tax } from "../../../../models/tax/tax";
 
 export const EthBusOrgForm = forwardRef(
   (
-    props: { onSubmit: SubmitHandler<any>; setDepartment: any },
+    props: {
+      onSubmit: SubmitHandler<any>;
+      setDepartment: any;
+      org: any;
+      setOrg: any;
+      orgInfo: any;
+      setOrgInfo: any;
+    },
     ref: React.ForwardedRef<any>
   ) => {
     const {
@@ -28,7 +35,6 @@ export const EthBusOrgForm = forwardRef(
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<any>();
 
-    const [org, setOrg] = useState<Organization>();
     const [legalConditions, setLegalConditions] = useState<LegalCondition[]>();
     const [taxes, setTaxes] = useState<Tax[]>([]);
 
@@ -69,18 +75,24 @@ export const EthBusOrgForm = forwardRef(
     const checkTIN = async (tin: string) => {
       console.log(tin);
       try {
-        setOrg(null);
+        props.setOrg(null);
         setError(null);
         setLoading(true);
         const res = await axios.get(`/org/check-tin?tin=${tin}`);
-        console.log("res", res.data["data"]);
+        console.log(
+          "res************************************************************+++++++++++++++++++++++++++++++++++++++++",
+          res.data["data"]
+        );
 
         if (res.data == null) {
           throw "Could not findtin";
         }
-        setOrg((p) => {
+        props.setOrg((p) => {
           var org = Organization.fromJSON(res.data["data"]);
-
+          console.log(
+            org,
+            "organizatoinin setting orfaoefjoiaef873y48f734h87fh38w4hf87h"
+          );
           setValue("name", org.Name);
           setValue("capital", org.Capital);
           setValue("regDate", org.RegDate.toISOString().substr(0, 10));
@@ -93,11 +105,12 @@ export const EthBusOrgForm = forwardRef(
           return org;
         });
         props.setDepartment(res.data["data"]["departments"]);
+
         setLoading(false);
       } catch (error) {
         console.log("Error :" + error);
 
-        setOrg(null);
+        props.setOrg(null);
         setLoading(false);
         setError("FETCH_ORG");
         console.log(error);
@@ -108,7 +121,10 @@ export const EthBusOrgForm = forwardRef(
       fetchLegalConditions();
       fetchTaxes();
     }, []);
-
+    useEffect(() => {
+      console.log(props.org, "org first********************************");
+      console.log(props.orgInfo, "org second********************************");
+    }, [props.org, props.orgInfo]);
     return (
       <div className="column">
         <div className="expanded">
@@ -125,9 +141,10 @@ export const EthBusOrgForm = forwardRef(
                   errors["tin"] != undefined ? " error" : ""
                 }`}>
                 <input
+                  value={props?.org?.Details?.tin}
                   {...register("tin", {
                     onChange: (v) => {
-                      setOrg(null);
+                      props.setOrg(null);
                       if (v.target.value.length == 10) {
                         console.log("Check TIN");
 
@@ -171,7 +188,7 @@ export const EthBusOrgForm = forwardRef(
                     </div>
                   ) : loading ? (
                     <IosSpinner />
-                  ) : !!org ? (
+                  ) : !!props.org ? (
                     "✅"
                   ) : (
                     ""
@@ -183,7 +200,7 @@ export const EthBusOrgForm = forwardRef(
               )}
             </div>
           </div>
-          {org && (
+          {props.org && (
             <div className="section">
               <div className="section_title">Organization Info</div>
               <div className="input_field">
@@ -207,6 +224,7 @@ export const EthBusOrgForm = forwardRef(
                     readOnly
                     // defaultValue={org.Name}
                     placeholder="Enter organization name"
+                    value={props?.org?.Name}
                   />
                 </div>
                 {errors && errors["name"] && (
@@ -226,6 +244,13 @@ export const EthBusOrgForm = forwardRef(
                     }`}
                     type="text"
                     placeholder="Enter organization description"
+                    value={props?.org?.Description}
+                    onChange={(e) => {
+                      props.setOrg({
+                        ...props.org,
+                        Description: e.target.value,
+                      });
+                    }}
                   />
                 </div>
                 {errors && errors["description"] && (
@@ -252,6 +277,13 @@ export const EthBusOrgForm = forwardRef(
                     readOnly
                     // defaultValue={org.Capital}
                     placeholder="Enter organization capital"
+                    value={props?.org?.Capital}
+                    onChange={(e) => {
+                      props.setOrg({
+                        ...props.org,
+                        Capital: e.target.value,
+                      });
+                    }}
                   />
                 </div>
                 {errors && errors["capital"] && (
@@ -272,7 +304,20 @@ export const EthBusOrgForm = forwardRef(
                     type="file"
                     accept="image/png, image/gif, image/jpeg"
                     placeholder="Enter organization logo"
+                    // value={props?.org?.Logo}
+                    onChange={(e) => {
+                      props.setOrg({
+                        ...props.org,
+                        Logo: e.target.files[0],
+                      });
+                    }}
                   />
+                  {props?.org?.Logo && (
+                    <div>
+                      <p>Selected File: {props?.org?.Logo?.name}</p>
+                      <p>File Size: {props?.org?.Logo?.size} bytes</p>
+                    </div>
+                  )}
                 </div>
                 {errors && errors["logo"] && (
                   <div className="input_field_error">{`${errors["logo"].message}`}</div>
@@ -297,6 +342,7 @@ export const EthBusOrgForm = forwardRef(
                     type="date"
                     readOnly
                     placeholder="Enter organization registration date"
+                    value={props?.org?.RegDate.toISOString().split("T")[0]}
                   />
                 </div>
                 {errors && errors["regDate"] && (
@@ -317,15 +363,25 @@ export const EthBusOrgForm = forwardRef(
                       },
                     })}
                     className={`input_field_input ${
-                      errors["regDate"] != undefined ? " error" : ""
+                      errors["regNo"] != undefined ? " error" : ""
                     }`}
                     // type="date"
                     readOnly
                     placeholder="Enter organization registration no"
+                    value={props?.org?.Details?.reg_no}
+                    onChange={(e) => {
+                      props.setOrg({
+                        ...props.org,
+                        Details: {
+                          ...props.org.Details,
+                          reg_no: e.target.value,
+                        },
+                      });
+                    }}
                   />
                 </div>
-                {errors && errors["regDate"] && (
-                  <div className="input_field_error">{`${errors["regDate"].message}`}</div>
+                {errors && errors["regNo"] && (
+                  <div className="input_field_error">{`${errors["regNo"].message}`}</div>
                 )}
               </div>
               <div className="input_field">
@@ -347,7 +403,27 @@ export const EthBusOrgForm = forwardRef(
                     type="file"
                     accept="image/png, image/jpeg, application/pdf"
                     placeholder="Upload your registration file"
+                    // value={props?.org?.Details?.reg_no}
+                    onChange={(e) => {
+                      props.setOrg({
+                        ...props.org,
+                        Details: {
+                          ...props.org.Details,
+                          reg_file: e.target.files[0],
+                        },
+                      });
+                    }}
                   />
+                  {props?.org?.Details?.reg_file && (
+                    <div>
+                      <p>
+                        Selected File: {props?.org?.Details?.reg_file?.name}
+                      </p>
+                      <p>
+                        File Size: {props?.org?.Details?.reg_file?.size} bytes
+                      </p>
+                    </div>
+                  )}
                 </div>
                 {errors && errors["regFile"] && (
                   <div className="input_field_error">{`${errors["regFile"].message}`}</div>
@@ -357,6 +433,10 @@ export const EthBusOrgForm = forwardRef(
                 <div className="dropdown">
                   <div className="dropdown_label">Legal Condition</div>
                   <select
+                    value={
+                      props?.orgInfo?.legal_condition_id ||
+                      props?.org?.LegalCondition?.Id
+                    }
                     {...register("legalCondition", {
                       onChange: (v) => {
                         console.log(v.target.value);
@@ -372,7 +452,18 @@ export const EthBusOrgForm = forwardRef(
                     // value={org.LegalCondition.Id}
                     className={`dropdown_input ${
                       errors["legalCondition"] != undefined ? " error" : ""
-                    }`}>
+                    }`}
+                    // onChange={(e) => {
+                    //   props.setOrg({
+                    //     ...props?.org,
+                    //     LegalCondition: {
+                    //       ...props?.org?.LegalCondition?.Id,
+                    //       Id: e.target.value,
+                    //     },
+                    //   });
+                    //  value={.LegalCondition?.Id}
+                    // }}
+                  >
                     <option value="" disabled>
                       Select organization type
                     </option>
@@ -383,8 +474,8 @@ export const EthBusOrgForm = forwardRef(
                             key={e.Id}
                             value={e.Id}
                             disabled={
-                              !!org.LegalCondition &&
-                              org.LegalCondition.Id != e.Id
+                              !!props.org.LegalCondition &&
+                              props.org.LegalCondition.Id != e.Id
                             }>
                             {e.Name}
                           </option>
@@ -398,15 +489,26 @@ export const EthBusOrgForm = forwardRef(
               )}
             </div>
           )}
-          {org && (
+          {props.org && (
             <div className="section">
               <div className="section_title">Organization Tax</div>
               <div className="dropdown">
                 <div className="dropdown_label">Tax Collection Method</div>
                 <select
+                  // value={d}
+                  value={props.orgInfo?.taxes[0].tax_id}
                   {...register("orgTax", {
                     onChange: (v) => {
                       console.log(v.target.value);
+                      props.setOrgInfo({
+                        ...props?.orgInfo,
+                        taxes: [
+                          {
+                            ...props?.orgInfo?.taxes[0],
+                            tax_id: v.target.value,
+                          },
+                        ],
+                      });
                     },
                     required: {
                       value: true,
@@ -452,7 +554,28 @@ export const EthBusOrgForm = forwardRef(
                     type="file"
                     accept="image/png, image/jpeg, application/pdf"
                     placeholder="Enter your TIN"
+                    onChange={(e) => {
+                      props.setOrgInfo({
+                        ...props?.orgInfo,
+                        taxes: [
+                          {
+                            ...props?.orgInfo?.taxes[0],
+                            file: e.target.files[0],
+                          },
+                        ],
+                      });
+                    }}
                   />
+                  {props?.orgInfo?.taxes[0]?.file && (
+                    <div>
+                      <p>
+                        Selected File: {props?.orgInfo?.taxes[0]?.file.name}
+                      </p>
+                      <p>
+                        File Size: {props?.orgInfo?.taxes[0]?.file.size} bytes
+                      </p>
+                    </div>
+                  )}
                 </div>
                 {errors && errors["tax"] && (
                   <div className="input_field_error">{`${errors["tax"].message}`}</div>
@@ -460,7 +583,7 @@ export const EthBusOrgForm = forwardRef(
               </div>
             </div>
           )}
-          {org && (
+          {props.org && (
             <div className="section">
               <div className="section_title">Organization Associates</div>
               <div className="input_field">
@@ -470,6 +593,7 @@ export const EthBusOrgForm = forwardRef(
                     errors["associateFullname"] != undefined ? " error" : ""
                   }`}>
                   <input
+                    value={props?.org?.Associates?.fullName}
                     {...register("associateFullname", {
                       required: {
                         value: true,
@@ -481,6 +605,15 @@ export const EthBusOrgForm = forwardRef(
                     }`}
                     type="text"
                     placeholder="Enter associate's full name"
+                    onChange={(e) => {
+                      props.setOrg({
+                        ...props.org,
+                        Associates: {
+                          ...props.org.Associates,
+                          fullName: e.target.value,
+                        },
+                      });
+                    }}
                   />
                 </div>
                 {errors && errors["associateFullname"] && (
@@ -494,6 +627,7 @@ export const EthBusOrgForm = forwardRef(
                     errors["associatePhonenumber"] != undefined ? " error" : ""
                   }`}>
                   <input
+                    value={props?.org?.Associates?.phoneNumber}
                     {...register("associatePhonenumber", {
                       required: {
                         value: true,
@@ -507,6 +641,15 @@ export const EthBusOrgForm = forwardRef(
                     }`}
                     type="text"
                     placeholder="Enter associate's phone number"
+                    onChange={(e) => {
+                      props.setOrg({
+                        ...props.org,
+                        Associates: {
+                          ...props.org.Associates,
+                          phoneNumber: e.target.value,
+                        },
+                      });
+                    }}
                   />
                 </div>
                 {errors && errors["associatePhonenumber"] && (
@@ -520,12 +663,22 @@ export const EthBusOrgForm = forwardRef(
                     errors["associatePosition"] != undefined ? " error" : ""
                   }`}>
                   <input
+                    value={props?.org?.Associates?.position}
                     {...register("associatePosition", {})}
                     className={`input_field_input ${
                       errors["associatePosition"] != undefined ? " error" : ""
                     }`}
                     type="text"
                     placeholder="Enter associate's position (Manager, Owner, ...)"
+                    onChange={(e) => {
+                      props.setOrg({
+                        ...props.org,
+                        Associates: {
+                          ...props.org.Associates,
+                          position: e.target.value,
+                        },
+                      });
+                    }}
                   />
                 </div>
                 {errors && errors["associatePosition"] && (
