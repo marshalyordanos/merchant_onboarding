@@ -7,7 +7,7 @@ import React, {
 import { SubmitHandler } from "react-hook-form";
 import { Department } from "../../../../models/department/department";
 import { BookFilledIcon } from "../../../../widgets/icons/icons";
-import { Collapse, Divider, Select } from "antd";
+import { Collapse, Divider, Select, message } from "antd";
 import "./Department.css";
 import axios from "axios";
 const Department_service = forwardRef(
@@ -65,8 +65,30 @@ const Department_service = forwardRef(
     useImperativeHandle(ref, () => ({
       validateClick() {
         console.log("validateClick ---- props on submit");
-        props.onSubmit(props.departments);
-        console.log("validateClick ----*****");
+
+        console.log(props.departments);
+
+        if (props.departments.length === 0) {
+          message.info("Please select at least one department");
+        } else {
+          const condition = props.departments.every((dept: any) => {
+            return dept.file != null && dept.file !== "";
+          });
+          if (!condition) {
+            // console.log(condition, "condiytion");
+            // console.log(props.departments, "data to be called empty");
+            message.info("Please add files to your selected department(s)");
+          } else {
+            // console.log(condition, "condiytion");
+            // console.log(props.departments, "data to be called empty");
+
+            props.onSubmit(props.departments);
+            console.log("validateClick ----*****");
+          }
+        }
+        //  else {
+
+        // }
       },
     }));
     const handleChange = (value: string[], d: any) => {

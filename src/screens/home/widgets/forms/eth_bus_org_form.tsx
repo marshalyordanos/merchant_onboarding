@@ -11,6 +11,7 @@ import axios from "axios";
 import { IosSpinner } from "../../../../widgets/loading/loading";
 import { Organization } from "../../../../models/organization/organization";
 import { Tax } from "../../../../models/tax/tax";
+import { message } from "antd";
 
 export const EthBusOrgForm = forwardRef(
   (
@@ -21,6 +22,8 @@ export const EthBusOrgForm = forwardRef(
       setOrg: any;
       orgInfo: any;
       setOrgInfo: any;
+      setIndex: any;
+      index: any;
     },
     ref: React.ForwardedRef<any>
   ) => {
@@ -41,7 +44,25 @@ export const EthBusOrgForm = forwardRef(
     useImperativeHandle(ref, () => ({
       validate() {
         console.log("validsate ----");
-        handleSubmit(props.onSubmit)();
+        if (
+          props?.org.Details.reg_file !== null &&
+          props?.org.Details.reg_file !== undefined &&
+          props?.org.Details.reg_file !== ""
+        ) {
+          if (
+            props?.orgInfo.taxes[0].file !== null &&
+            props?.orgInfo.taxes[0].file !== undefined &&
+            props?.orgInfo.taxes[0].file !== ""
+          ) {
+            handleSubmit(props.onSubmit)();
+          } else {
+            message.info("Supporting file missing");
+          }
+        } else {
+          message.info("Registration file missing");
+        }
+        // props.setIndex(props.index + 1);
+
         console.log("validsate ----*****");
       },
     }));
@@ -369,15 +390,15 @@ export const EthBusOrgForm = forwardRef(
                     readOnly
                     placeholder="Enter organization registration no"
                     value={props?.org?.Details?.reg_no}
-                    onChange={(e) => {
-                      props.setOrg({
-                        ...props.org,
-                        Details: {
-                          ...props.org.Details,
-                          reg_no: e.target.value,
-                        },
-                      });
-                    }}
+                    // onChange={(e) => {
+                    //   props.setOrg({
+                    //     ...props.org,
+                    //     Details: {
+                    //       ...props.org.Details,
+                    //       reg_no: e.target.value,
+                    //     },
+                    //   });
+                    // }}
                   />
                 </div>
                 {errors && errors["regNo"] && (
@@ -394,10 +415,10 @@ export const EthBusOrgForm = forwardRef(
                   }`}>
                   <input
                     {...register("regFile", {
-                      required: {
-                        value: true,
-                        message: "Field is required",
-                      },
+                      // required: {
+                      //   value: true,
+                      //   message: "Field is required",
+                      // },
                     })}
                     className={`input_field_input`}
                     type="file"
@@ -543,10 +564,10 @@ export const EthBusOrgForm = forwardRef(
                   }`}>
                   <input
                     {...register("tax", {
-                      required: {
-                        value: true,
-                        message: "Field is required",
-                      },
+                      // required: {
+                      //   value: true,
+                      //   message: "Field is required",
+                      // },
                     })}
                     className={`input_field_input ${
                       errors["tax"] != undefined ? " error" : ""
@@ -664,7 +685,12 @@ export const EthBusOrgForm = forwardRef(
                   }`}>
                   <input
                     value={props?.org?.Associates?.position}
-                    {...register("associatePosition", {})}
+                    {...register("associatePosition", {
+                      required: {
+                        value: true,
+                        message: "Field is required",
+                      },
+                    })}
                     className={`input_field_input ${
                       errors["associatePosition"] != undefined ? " error" : ""
                     }`}

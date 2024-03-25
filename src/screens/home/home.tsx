@@ -81,9 +81,9 @@ export const Home = () => {
     ],
     details: {
       TIN: "",
-      TINFile: "",
+      TINFile: null,
       RegNo: "",
-      RegFile: "",
+      RegFile: null,
       Status: {
         Id: "00000000-0000-0000-0000-000000000000",
         Verified: false,
@@ -98,7 +98,7 @@ export const Home = () => {
     },
     retention_status: {
       can_retain: false,
-      file: "",
+      file: null,
     },
     taxes: [
       {
@@ -439,6 +439,8 @@ export const Home = () => {
                           <EthBusOrgForm
                             setDepartment={setDepartment}
                             org={org}
+                            setIndex={setIndex}
+                            index={index}
                             setOrg={setOrg}
                             orgInfo={orgInfo}
                             setOrgInfo={setOrgInfo}
@@ -497,6 +499,7 @@ export const Home = () => {
                                   file: "",
                                 },
                               });
+                              setIndex(index + 1);
                             }}
                             ref={_step2Ref}
                           />
@@ -516,6 +519,7 @@ export const Home = () => {
 
                             console.log("departsments", v);
                             setOrgInfo({ ...orgInfo, departments: v });
+                            setIndex(index + 1);
                           }}
                           ref={_step3Ref}
                         />
@@ -578,7 +582,7 @@ export const Home = () => {
                               "11212121212121212121212121212-===-=--==-=-=-=-=-=-=-=-=-=***************"
                               // _step2Ref.current.value
                             );
-                            setIndex(index + 1);
+                            // setIndex(index + 1);
                           }
                         }
                         break;
@@ -594,7 +598,6 @@ export const Home = () => {
                             console.log(
                               "validateClick-===-=--==-=-=-=-=-=-=-=-=-=***************case2"
                             );
-                            setIndex(index + 1);
                           }
                         }
                         break;
