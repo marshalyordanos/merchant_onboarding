@@ -44,23 +44,8 @@ export const EthBusOrgForm = forwardRef(
     useImperativeHandle(ref, () => ({
       validate() {
         console.log("validsate ----");
-        if (
-          props?.org.Details.reg_file !== null &&
-          props?.org.Details.reg_file !== undefined &&
-          props?.org.Details.reg_file !== ""
-        ) {
-          if (
-            props?.orgInfo.taxes[0].file !== null &&
-            props?.orgInfo.taxes[0].file !== undefined &&
-            props?.orgInfo.taxes[0].file !== ""
-          ) {
-            handleSubmit(props.onSubmit)();
-          } else {
-            message.info("Supporting file missing");
-          }
-        } else {
-          message.info("Registration file missing");
-        }
+        handleSubmit(props.onSubmit)();
+
         // props.setIndex(props.index + 1);
 
         console.log("validsate ----*****");
@@ -73,7 +58,28 @@ export const EthBusOrgForm = forwardRef(
         var taxes: Tax[] = (res.data["data"] as Map<string, any>[]).map((e) =>
           Tax.fromJSON(e)
         );
+        let taxesDefault: any = taxes;
+        console.log(taxesDefault, "taxes default setting fetch result");
         setTaxes(taxes);
+        {
+          props.orgInfo.taxes !== undefined &&
+            props.orgInfo.taxes[0].id === "" &&
+            props.setOrgInfo({
+              ...props.orgInfo,
+              taxes: [
+                ...props.orgInfo?.taxes,
+                {
+                  tax_id: taxesDefault[0].Id,
+                  status: {
+                    verified: false,
+                    status: "",
+                    message: "",
+                  },
+                  file: null,
+                },
+              ],
+            });
+        }
         console.log("taxes ----", taxes);
       } catch (error) {
         console.log(error);
@@ -163,9 +169,18 @@ export const EthBusOrgForm = forwardRef(
                 }`}>
                 <input
                   value={props?.org?.Details?.tin}
+                  onChange={() => {
+                    props.setOrg(null);
+                    props.setOrgInfo(null);
+                  }}
+                  onBlur={() => {
+                    props.setOrg(null);
+                    props.setOrgInfo(null);
+                  }}
                   {...register("tin", {
                     onChange: (v) => {
                       props.setOrg(null);
+                      props.setOrgInfo(null);
                       if (v.target.value.length == 10) {
                         console.log("Check TIN");
 
@@ -197,7 +212,9 @@ export const EthBusOrgForm = forwardRef(
                   maxLength={10}
                   minLength={10}
                 />
-
+                {/* {errors && errors["tin"] && (
+                  <div className="input_field_error">{`${errors["tin"].message}`}</div>
+                )} */}
                 <div className="input_field_suffix">
                   {error == "FETCH_ORG" ? (
                     <div
@@ -331,6 +348,7 @@ export const EthBusOrgForm = forwardRef(
                         ...props.org,
                         Logo: e.target.files[0],
                       });
+                      // props.setOrgInfo({})
                     }}
                   />
                   {props?.org?.Logo && (
@@ -517,7 +535,10 @@ export const EthBusOrgForm = forwardRef(
                 <div className="dropdown_label">Tax Collection Method</div>
                 <select
                   // value={d}
-                  value={props.orgInfo?.taxes[0].tax_id}
+                  value={
+                    props.orgInfo?.taxes[0].tax_id !== undefined &&
+                    props.orgInfo?.taxes[0].tax_id
+                  }
                   {...register("orgTax", {
                     onChange: (v) => {
                       console.log(v.target.value);
@@ -531,10 +552,10 @@ export const EthBusOrgForm = forwardRef(
                         ],
                       });
                     },
-                    required: {
-                      value: true,
-                      message: "Field is required",
-                    },
+                    // required: {
+                    //   value: true,
+                    //   message: "Field is required",
+                    // },
                   })}
                   defaultValue={""}
                   className={`dropdown_input ${

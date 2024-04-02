@@ -19,9 +19,9 @@ import Department_service from "./widgets/forms/Department_service";
 import { message, Button, Result, Modal } from "antd";
 import { Organization } from "../../models/organization/organization";
 
-axios.defaults.baseURL = "http://196.189.126.183:5005";
-axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
-axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
+axios.defaults.baseURL = "http://192.168.0.119:5005";
+// axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
+// axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
 
 export const Home = () => {
   const [index, setIndex] = useState(0);
@@ -57,7 +57,7 @@ export const Home = () => {
     name: "",
     description: "",
     logo: "",
-    capital: "",
+    capital: 0,
     reg_date: "",
     legal_condition_id: "",
     // taxes: [
@@ -112,13 +112,16 @@ export const Home = () => {
       },
     ],
   });
+  useEffect(() => {
+    console.log(orgInfo, "organization info");
+  }, [orgInfo]);
   const [orgTypes, setOrgTypes] = useState<Category[] | null>();
   const [selectedOrgType, setSelectedOrgType] = useState<Category | null>();
   const [countries, setCountries] = useState<Country[] | null>();
   const [selectedCountry, setSelectedCountry] = useState<Country | null>();
   const [department, setDepartment] = useState<Department[] | null>([]);
   const [departments, setDeparments] = useState([]);
-  const [org, setOrg] = useState<Organization>();
+  const [org, setOrg] = useState<any>();
 
   //to be removed later
   const [selectedFile, setSelectedFile] = useState(null);
@@ -207,8 +210,6 @@ export const Home = () => {
     console.log("loading state...$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$", loading);
   }, [loading]);
   const processFiles = async (dataObject: any) => {
-    setLoading(true);
-
     const updatedDataObject: any = {};
 
     await Promise.all(
@@ -235,13 +236,16 @@ export const Home = () => {
         }
       })
     );
-    setLoading(false);
+    // setLoading(false);
     return updatedDataObject;
   };
   const handleOrgInfoSubmit = async (data: any) => {
     const response = await axios.post("/orgs", data);
     console.log(response, "final repsonse");
-
+    // await fetch("http://192.168.0.119:5005/orgs", {
+    //   method: "POST",
+    //   body: JSON.parse(data),
+    // });
     return response;
   };
 
@@ -264,6 +268,7 @@ export const Home = () => {
                   v.target.value,
                   "org type value*******************"
                 );
+                setOrgInfo({ ...orgInfo, category_id: v.target.value });
                 console.log(orgTypes.find((e) => e.Id == v.target.value));
                 setSelectedOrgType(
                   orgTypes.find((e) => e.Id == v.target.value)
@@ -452,23 +457,38 @@ export const Home = () => {
                               // const formatted
                               setOrgInfo({
                                 ...orgInfo,
+                                category_id: org?.Category?.Id,
+                                country: org?.Country,
                                 name: v.name,
                                 description: v.description,
-                                logo: v.logo[0],
-                                capital: v.capital,
+                                logo: org?.Logo,
+                                capital: Number(v.capital),
                                 reg_date: convertedDate,
                                 legal_condition_id: v.legalCondition,
-                                taxes: [
-                                  {
-                                    tax_id: v.orgTax,
-                                    file: v.tax[0],
-                                    status: {
-                                      verified: false,
-                                      status: "",
-                                      message: "",
-                                    },
+                                // taxes: [
+                                //   {
+                                //     tax_id: v.orgTax,
+                                //     file: v.tax[0],
+                                //     status: {
+                                //       verified: false,
+                                //       status: "",
+                                //       message: "",
+                                //     },
+                                //   },
+                                details: {
+                                  TIN: org?.Details?.tin,
+                                  TINFile:
+                                    orgInfo.taxes !== undefined &&
+                                    orgInfo?.taxes[0]?.file,
+                                  RegNo: org?.Details?.reg_no,
+                                  RegFile: org?.Details?.reg_file,
+                                  Status: {
+                                    Id: "00000000-0000-0000-0000-000000000000",
+                                    Verified: false,
+                                    Status: "",
+                                    Message: "",
                                   },
-                                ],
+                                },
                                 departments: [],
                                 associates: [
                                   {
@@ -477,18 +497,6 @@ export const Home = () => {
                                     full_name: v.associateFullname,
                                   },
                                 ],
-                                details: {
-                                  TIN: v.tin,
-                                  TINFile: v.tax[0],
-                                  RegNo: v.regNo,
-                                  RegFile: v.regFile[0],
-                                  Status: {
-                                    Id: "00000000-0000-0000-0000-000000000000",
-                                    Verified: false,
-                                    Status: "",
-                                    Message: "",
-                                  },
-                                },
                                 status: {
                                   verified: false,
                                   status: "",
@@ -499,7 +507,33 @@ export const Home = () => {
                                   file: "",
                                 },
                               });
-                              setIndex(index + 1);
+                              if (
+                                orgInfo?.taxes[0].tax_id !== undefined &&
+                                orgInfo?.taxes[0].tax_id !== null &&
+                                orgInfo?.taxes[0].tax_id !== ""
+                              ) {
+                                if (
+                                  org?.Details?.reg_file !== null &&
+                                  org?.Details?.reg_file !== undefined &&
+                                  org?.Details?.reg_file !== ""
+                                ) {
+                                  if (
+                                    orgInfo?.taxes[0]?.file !== null &&
+                                    orgInfo?.taxes[0]?.file !== undefined &&
+                                    orgInfo?.taxes[0]?.file !== ""
+                                  ) {
+                                    setIndex(index + 1);
+                                  } else {
+                                    message.info("Supporting file missing");
+                                  }
+                                } else {
+                                  message.info("Registration file missing");
+                                }
+                              } else {
+                                message.info(
+                                  "Please choose tax collection methodology"
+                                );
+                              }
                             }}
                             ref={_step2Ref}
                           />
@@ -609,6 +643,8 @@ export const Home = () => {
                             index
                           );
                           if (agreement) {
+                            setLoading(true);
+
                             processFiles(orgInfo).then((updatedDataObject) => {
                               console.log(
                                 "Updated Data Object:",
@@ -625,6 +661,7 @@ export const Home = () => {
 
                                   if (res.status === 200) {
                                     setResultView(true);
+                                    setLoading(false);
                                   } else {
                                     message.error("An error occurred");
                                   }
