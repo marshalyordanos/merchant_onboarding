@@ -69,7 +69,7 @@ export const EthBusOrgForm = forwardRef(
               taxes: [
                 ...props.orgInfo?.taxes,
                 {
-                  tax_id: taxesDefault[0].Id,
+                  tax_id: taxesDefault[0]?.Id,
                   status: {
                     verified: false,
                     status: "",
@@ -171,16 +171,16 @@ export const EthBusOrgForm = forwardRef(
                   value={props?.org?.Details?.tin}
                   onChange={() => {
                     props.setOrg(null);
-                    props.setOrgInfo(null);
+                    // props.setOrgInfo(null);
                   }}
                   onBlur={() => {
                     props.setOrg(null);
-                    props.setOrgInfo(null);
+                    // props.setOrgInfo(null);
                   }}
                   {...register("tin", {
                     onChange: (v) => {
                       props.setOrg(null);
-                      props.setOrgInfo(null);
+                      // props.setOrgInfo(null);
                       if (v.target.value.length == 10) {
                         console.log("Check TIN");
 
@@ -536,6 +536,7 @@ export const EthBusOrgForm = forwardRef(
                 <select
                   // value={d}
                   value={
+                    props?.orgInfo?.taxes?.length > 0 &&
                     props.orgInfo?.taxes[0].tax_id !== undefined &&
                     props.orgInfo?.taxes[0].tax_id
                   }

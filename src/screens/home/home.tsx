@@ -19,7 +19,7 @@ import Department_service from "./widgets/forms/Department_service";
 import { message, Button, Result, Modal } from "antd";
 import { Organization } from "../../models/organization/organization";
 
-axios.defaults.baseURL = "http://192.168.0.119:5005";
+axios.defaults.baseURL = "http://196.189.126.183:5005";
 // axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
 // axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
 
@@ -143,7 +143,7 @@ export const Home = () => {
   }, [orgInfo]);
   useEffect(() => {
     console.log(
-      "orginfo((((((((((((((((((((((((((9))))))))))))))))))))))))))",
+      "org((((((((((((((((((((((((((9))))))))))))))))))))))))))",
       org
     );
   }, [org]);
@@ -724,7 +724,7 @@ export const Home = () => {
                 href=""
                 key="go"
                 onClick={() => window.location.reload()}>
-                Go to Dashboard
+                Go to Home
               </a>,
             ]}
           />
