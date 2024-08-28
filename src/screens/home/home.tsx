@@ -53,6 +53,7 @@ export const Home = () => {
   } = useForm();
   const [orgInfo, setOrgInfo] = useState({
     category_id: "",
+    phone_number: "",
     country: "",
     name: "",
     description: "",
@@ -455,11 +456,24 @@ export const Home = () => {
                               const [year, month, day] = v.regDate.split("-");
                               const convertedDate = `${month}/${day}/${year}`;
                               // const formatted
+                              let phoneNumber = "";
+                              if (v.associatePhonenumber.startsWith("0")) {
+                                phoneNumber =
+                                  "251" + v.associatePhonenumber.substring(1);
+                              } else if (
+                                v.associatePhonenumber.startsWith("+")
+                              ) {
+                                phoneNumber =
+                                  v.associatePhonenumber.substring(1);
+                              } else {
+                                phoneNumber = v.associatePhonenumber;
+                              }
                               setOrgInfo({
                                 ...orgInfo,
                                 category_id: org?.Category?.Id,
                                 country: org?.Country,
                                 name: v.name,
+                                phone_number: phoneNumber,
                                 description: v.description,
                                 logo: org?.Logo,
                                 capital: Number(v.capital),
